@@ -8,4 +8,6 @@
 
 BFProgram *make_program(uint64_t length);
 
+bool valid(const char *program, uint64_t prog_length);
+
 BFProgram *cleanup(const char *program, uint64_t prog_length);
