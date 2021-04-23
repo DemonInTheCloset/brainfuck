@@ -11,7 +11,7 @@ void print_prog(const BFProgram *prog) {
       char c;
 
       if (value & 0x20) { // sign extend
-        value |= 0xa0;
+        value |= 0xc0;
         value = -value;
         c = '-';
       } else {
@@ -26,7 +26,7 @@ void print_prog(const BFProgram *prog) {
       char c;
 
       if (value & 0x20) { // sign extend
-        value |= 0xa0;
+        value |= 0xc0;
         value = -value;
         c = '<';
       } else {
