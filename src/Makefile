@@ -11,4 +11,4 @@ bfclean.o: bfdef.h bfclean.h
 bfprint.o: bfdef.h bfprint.h
 
 clean:
-	rm -rf build
+	rm -rf bftool *.o
