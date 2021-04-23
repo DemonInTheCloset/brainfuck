@@ -1,5 +1,7 @@
 .PHONY: all clean
 
+CFLAGS+=-Wall -Wextra -std=c17 -Wpedantic
+
 all: bftool
 
 build:
