@@ -11,6 +11,10 @@ BFProgram *make_program(uint64_t length) {
   return prog;
 }
 
+uint8_t create_instruction(int64_t value, enum BFInstruction instr) {
+  return ((value & 0x3f) << 2) | instr;
+}
+
 bool valid(const char *program, uint64_t length) {
   int64_t count = 0;
 
@@ -111,42 +115,42 @@ BFProgram *cleanup(const char *program, uint64_t prog_length) {
       case '+':
         ++value;
         if (program[pc] != '+' && program[pc] != '-') {
-          prog_src->program[ic++] = ((value & 0x3f) << 2) | BF_ADD_CELL;
+          prog_src->program[ic++] = create_instruction(value, BF_ADD_CELL);
           value = 0;
         }
         break;
       case '-':
         --value;
         if (program[pc] != '+' && program[pc] != '-') {
-          prog_src->program[ic++] = ((value & 0x3f) << 2) | BF_ADD_CELL;
+          prog_src->program[ic++] = create_instruction(value, BF_ADD_CELL);
           value = 0;
         }
         break;
       case '>':
         ++value;
         if (program[pc] != '>' && program[pc] != '<') {
-          prog_src->program[ic++] = ((value & 0x3f) << 2) | BF_ADD_PTR;
+          prog_src->program[ic++] = create_instruction(value, BF_ADD_PTR);
           value = 0;
         }
         break;
       case '<':
         --value;
         if (program[pc] != '>' && program[pc] != '<') {
-          prog_src->program[ic++] = ((value & 0x3f) << 2) | BF_ADD_PTR;
+          prog_src->program[ic++] = create_instruction(value, BF_ADD_PTR);
           value = 0;
         }
         break;
       case '[':
-        prog_src->program[ic++] = 0x00 | BF_JMP;
+        prog_src->program[ic++] = create_instruction(0x00, BF_JMP);
         break;
       case ']':
-        prog_src->program[ic++] = 0xfc | BF_JMP;
+        prog_src->program[ic++] = create_instruction(0xff, BF_JMP);
         break;
       case '.':
-        prog_src->program[ic++] = 0x00 | BF_IO;
+        prog_src->program[ic++] = create_instruction(0x00, BF_IO);
         break;
       case ',':
-        prog_src->program[ic++] = 0xfc | BF_IO;
+        prog_src->program[ic++] = create_instruction(0xfc, BF_IO);
         break;
       }
     }
