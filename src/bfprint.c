@@ -25,7 +25,7 @@ void pretty_print(size_t n, uint8_t prog[n], const char *indent) {
       break;
     case BF_JMP:
       if (value == 0 || value == -1) {
-        indent_level += value;
+        indent_level += value ? value : 1;
         printf("%s\n", jumps[value == -1]);
       } else {
         printf("bad value: %d\n", value);
