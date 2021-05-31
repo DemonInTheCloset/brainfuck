@@ -1,6 +1,6 @@
-.PHONY: all clean src/clean
+.PHONY: all clean
 
-all: brainfuck
+all: clean brainfuck
 
 brainfuck: src/bftool
 	cp $^ $@
