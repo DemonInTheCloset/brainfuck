@@ -1,5 +1,6 @@
 #include "bfclean.h"
 #include "bfdef.h"
+#include "bfinterpret.h"
 #include "bfprint.h"
 #include <getopt.h>
 #include <stdbool.h>
@@ -60,7 +61,7 @@ size_t read_file(const char *path, char **output) {
 }
 
 int main(int argc, char **argv) {
-  bool is_file = true, byte_code = false, interpret = false;
+  bool is_file = true, byte_code = false, run_vm = false;
   char *output = NULL;
   int verbose = 0;
   int opt;
@@ -74,7 +75,7 @@ int main(int argc, char **argv) {
       printf(usage, argv[0]);
       return EXIT_SUCCESS;
     case 'i':
-      interpret = true;
+      run_vm = true;
       break;
     case 'o':
       output = optarg;
@@ -104,13 +105,26 @@ int main(int argc, char **argv) {
 
   char *file = argv[optind];
 
-  if (interpret) {
-    fprintf(stderr, "Error: interpreter not yet implemented\n");
-    return EXIT_FAILURE;
-  }
+  if (run_vm) {
+    if (!is_file) {
+      fprintf(stderr, "Error: can only interpret files\n");
+      return EXIT_FAILURE;
+    }
 
-  if (!output) {
-    output = byte_code ? "a.bfc" : "a.out";
+    uint8_t *prog;
+    BFC_HEADER header = read_bytecode(file, &prog);
+
+    if (prog) {
+      int success = EXIT_FAILURE;
+      if (header.size) {
+        success = interpret(header.size, prog, header.flags);
+      }
+
+      free(prog);
+      return success;
+    }
+
+    return EXIT_FAILURE;
   }
 
   char *text = NULL;
@@ -136,13 +150,20 @@ int main(int argc, char **argv) {
   }
 
   len = proccess(len, text, buffer);
+
   if (is_file) {
-    free(file);
+    free(text);
   }
+
+  if (!output) {
+    output = byte_code ? "a.bfc" : "a.out";
+  }
+
+  int success = write_bytecode(len, buffer, BFC_RJMP, output);
 
   pretty_print(len, buffer, "  ");
 
   free(buffer);
 
-  return EXIT_SUCCESS;
+  return success;
 }
