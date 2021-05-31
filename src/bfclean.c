@@ -23,18 +23,35 @@ static inline uint8_t to_instr(char c) {
   }
 }
 
-static inline uint8_t instr(int val, BF_OPT opt) { return (val << 2) | opt; }
+static inline uint8_t instr(unsigned val, BF_OPT opt) {
+  return (val << 2) | opt;
+}
 
 size_t remove_comments(size_t n, const char prog[n], uint8_t output[n]) {
   size_t ic = 0;
 
   for (size_t i = 0; i < n; ++i) {
     switch (prog[i]) {
+    case '[':
+      // Comment: skip
+      if (ic == 0) {
+        int count = 0, done = 0;
+        for (++i; i < n && !done; ++i) {
+          switch (prog[i]) {
+          case '[':
+            count++;
+            break;
+          case ']':
+            done = count-- == 0;
+            break;
+          }
+        }
+      }
+      __attribute__((fallthrough));
     case '+':
     case '-':
     case '>':
     case '<':
-    case '[':
     case ']':
       // printf("char: %c, instr: 0x%02x\n", prog[i], to_instr(prog[i]));
       output[ic++] = to_instr(prog[i]);
