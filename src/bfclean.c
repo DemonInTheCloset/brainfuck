@@ -218,5 +218,9 @@ size_t proccess(size_t n, const char prog[n], uint8_t output[n]) {
 
   free(buffer);
 
+  if (match_jumps(n, output)) {
+    return 0;
+  }
+
   return n;
 }
