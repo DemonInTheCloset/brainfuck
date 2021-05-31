@@ -23,10 +23,6 @@ static inline uint8_t to_instr(char c) {
   }
 }
 
-static inline uint8_t instr(unsigned val, BF_OPT opt) {
-  return (val << 2) | opt;
-}
-
 size_t remove_comments(size_t n, const char prog[n], uint8_t output[n]) {
   size_t ic = 0;
 

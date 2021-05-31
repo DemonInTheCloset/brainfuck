@@ -1,14 +1,21 @@
 #include "bfclean.h"
+#include "bfdef.h"
 #include "bfprint.h"
 #include <getopt.h>
 #include <stdbool.h>
 
-static const char usage[] = "usage: %s [-s] FILE"
-                            "\n\nRequired:"
-                            "\n\tFILE: Path to the Brainfuck program"
-                            "\n\nOptional:"
-                            "\n\t-s:   Interpret FILE as a Brainfuck program"
-                            "\n";
+static const char usage[] =
+    "usage: %s [-c] [-h] [-i] [-o OUTPUT] [-s] [-v]* FILE"
+    "\n\nRequired:"
+    "\n\tFILE:      Path to the Brainfuck program"
+    "\n\nOptional:"
+    "\n\t-c:        Compile to bytecode"
+    "\n\t-h:        Print this help message"
+    "\n\t-i:        Run the interpreter on FILE"
+    "\n\t-o OUTPUT: Save to OUTPUT (default a.out)"
+    "\n\t-s:        Interpret FILE as a Brainfuck program"
+    "\n\t-v:        Increase verbose level"
+    "\n";
 
 size_t read_file(const char *path, char **output) {
   // Adapted from:
@@ -53,16 +60,30 @@ size_t read_file(const char *path, char **output) {
 }
 
 int main(int argc, char **argv) {
-  bool is_file = true;
+  bool is_file = true, byte_code = false, interpret = false;
+  char *output = NULL;
+  int verbose = 0;
   int opt;
 
-  while ((opt = getopt(argc, argv, "hs")) != -1) {
+  while ((opt = getopt(argc, argv, "chio:sv")) != -1) {
     switch (opt) {
+    case 'c':
+      byte_code = true;
+      break;
     case 'h':
       printf(usage, argv[0]);
       return EXIT_SUCCESS;
+    case 'i':
+      interpret = true;
+      break;
+    case 'o':
+      output = optarg;
+      break;
     case 's':
       is_file = false;
+      break;
+    case 'v':
+      ++verbose;
       break;
     case '?':
       fprintf(stderr, "Unkown option: %c\n", optopt);
@@ -82,6 +103,15 @@ int main(int argc, char **argv) {
   }
 
   char *file = argv[optind];
+
+  if (interpret) {
+    fprintf(stderr, "Error: interpreter not yet implemented\n");
+    return EXIT_FAILURE;
+  }
+
+  if (!output) {
+    output = byte_code ? "a.bfc" : "a.out";
+  }
 
   char *text = NULL;
   size_t len = 0;
@@ -106,6 +136,9 @@ int main(int argc, char **argv) {
   }
 
   len = proccess(len, text, buffer);
+  if (is_file) {
+    free(file);
+  }
 
   pretty_print(len, buffer, "  ");
 
