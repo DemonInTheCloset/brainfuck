@@ -53,6 +53,8 @@ size_t remove_comments(size_t n, const char prog[n], uint8_t output[n]) {
     case '>':
     case '<':
     case ']':
+    case '.':
+    case ',':
       // printf("char: %c, instr: 0x%02x\n", prog[i], to_instr(prog[i]));
       output[ic++] = to_instr(prog[i]);
       break;
