@@ -1,4 +1,4 @@
 #pragma once
-#include "bfclean.h"
+#include "bfdef.h"
 
 void pretty_print(size_t n, uint8_t prog[n], const char *indent);
