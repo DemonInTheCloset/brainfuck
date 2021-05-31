@@ -1,7 +1,7 @@
 .PHONY: all clean
 
 CC = gcc
-CFLAGS += -Wall -Wextra -Wpedantic -std=c17
+CFLAGS += -Wall -Wextra -Wpedantic -Wshadow -std=c17
 
 ifeq ($(VERBOSE),TRUE)
 	HIDE :=
