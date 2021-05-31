@@ -188,8 +188,8 @@ int match_jumps(size_t n, uint8_t prog[n]) {
           fprintf(stderr, "Warning: jump too long (%lu >= %u)\n", jump,
                   (1u << 13));
         } else {
-          int forward = jump;
-          int backward = -(int)jump;
+          int forward = jump + 1;
+          int backward = 1 - (int)jump;
 
           prog[ic] = instr(backward, BF_JMP);
           prog[stack[sp]] = instr(forward, BF_JMP);
