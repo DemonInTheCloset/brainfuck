@@ -28,7 +28,7 @@ void pretty_print(size_t n, uint8_t prog[n], const char *indent) {
       if (value == 0 || value == -1) {
         printf("%s\n", jumps[value == -1]);
       } else {
-        printf("%d (line %lu)\n", value, i + value);
+        printf("%d (line %lu)\n", value, i + value + 1);
       }
       break;
     case BF_IOC:
