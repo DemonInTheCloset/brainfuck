@@ -161,7 +161,9 @@ int main(int argc, char **argv) {
 
   int success = write_bytecode(len, buffer, BFC_RJMP, output);
 
-  pretty_print(len, buffer, "  ");
+  if (verbose) {
+    pretty_print(len, buffer, "  ");
+  }
 
   free(buffer);
 
