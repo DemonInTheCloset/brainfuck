@@ -1,13 +1,20 @@
 .PHONY: all clean
 
-all: clean brainfuck
+CC = gcc
+CFLAGS += -Wall -Wextra -Wpedantic -std=c17
 
-brainfuck: src/bftool
-	cp $^ $@
+ifeq ($(VERBOSE),TRUE)
+	HIDE :=
+else
+	HIDE := @
+endif
 
-src/%:
-	cd src && $(MAKE) $(patsubst src/%,%,$@)
+all: build/bftool
+
+build/bftool: build/bftool.o build/bfclean.o build/bfprint.o
+
+build/%.o: src/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $^
 
 clean:
-	cd src && $(MAKE) clean
-	rm -rf brainfuck
+	rm -rf brainfuck build/*
