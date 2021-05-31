@@ -1,4 +1,4 @@
-# build directory
-build/
+# Compiled binaries
 *.o
 *bftool
+brainfuck
