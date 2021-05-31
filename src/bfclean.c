@@ -3,21 +3,21 @@
 static inline uint8_t to_instr(char c) {
   switch (c) {
   case '+':
-    return (uint8_t)(1u << 2) | BF_ADD;
+    return (uint8_t)((1u << 2) | BF_ADD);
   case '-':
-    return (uint8_t)(-1u << 2) | BF_ADD;
+    return (uint8_t)((-1u << 2) | BF_ADD);
   case '>':
-    return (uint8_t)(1u << 2) | BF_PTR;
+    return (uint8_t)((1u << 2) | BF_PTR);
   case '<':
-    return (uint8_t)(-1u << 2) | BF_PTR;
+    return (uint8_t)((-1u << 2) | BF_PTR);
   case '[':
-    return (uint8_t)(0u << 2) | BF_JMP;
+    return (uint8_t)((0u << 2) | BF_JMP);
   case ']':
-    return (uint8_t)(-1u << 2) | BF_JMP;
+    return (uint8_t)((-1u << 2) | BF_JMP);
   case '.':
-    return (uint8_t)(0u << 2) | BF_IOC;
+    return (uint8_t)((0u << 2) | BF_IOC);
   case ',':
-    return (uint8_t)(-1u << 2) | BF_IOC;
+    return (uint8_t)((-1u << 2) | BF_IOC);
   default:
     return 0;
   }
@@ -36,6 +36,7 @@ size_t remove_comments(size_t n, const char prog[n], uint8_t output[n]) {
     case '<':
     case '[':
     case ']':
+      // printf("char: %c, instr: 0x%02x\n", prog[i], to_instr(prog[i]));
       output[ic++] = to_instr(prog[i]);
       break;
     default:
@@ -57,6 +58,7 @@ size_t merge_same(size_t n, const uint8_t prog[n], uint8_t output[n]) {
   for (size_t i = 1; i < n; ++i) {
     int val = instr_imm(prog[i]);
     BF_OPT opt = instr_opt(prog[i]);
+    // printf("split : 0x%02x -> 0x%x % 4d\n", prog[i], opt, val);
 
     if (opt == last) {
       switch (instr_opt(prog[i])) {
@@ -66,18 +68,25 @@ size_t merge_same(size_t n, const uint8_t prog[n], uint8_t output[n]) {
         break;
       case BF_JMP:
       case BF_IOC:
+        // printf("merged: 0x%02x <- 0x%x % 4d\n", instr(value, last), last,
+        // value);
         output[ic++] = instr(value, last);
+
         value = val;
-        last = val;
+        last = opt;
         break;
       }
     } else {
+      // printf("merged: 0x%02x <- 0x%x % 4d\n", instr(value, last), last,
+      // value);
       output[ic++] = instr(value, last);
+
       value = val;
       last = opt;
     }
   }
 
+  // printf("merged: 0x%02x <- 0x%x % 4d\n", instr(value, last), last, value);
   output[ic++] = instr(value, last);
 
   return ic;
@@ -118,7 +127,7 @@ size_t simplify(size_t n, uint8_t prog[n], uint8_t output[n]) {
 
   // Done
   if (new_n == n) {
-    memcpy(prog, output, n);
+    memcpy(prog, output, n); // NOLINT
     return new_n;
   }
 
