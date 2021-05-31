@@ -114,10 +114,18 @@ int main(int argc, char **argv) {
     uint8_t *prog;
     BFC_HEADER header = read_bytecode(file, &prog);
 
+    if (verbose) {
+      print_header(header);
+    }
+
     if (prog) {
       int success = EXIT_FAILURE;
       if (header.size) {
         success = interpret(header.size, prog, header.flags);
+
+        if (verbose) {
+          pretty_print(header.size, prog, "  ");
+        }
       }
 
       free(prog);
