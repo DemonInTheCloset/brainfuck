@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
       if (header.size) {
         success = interpret(header.size, prog, header.flags);
 
-        if (verbose) {
+        if (verbose > 1) {
           pretty_print(header.size, prog, "  ");
         }
       }
