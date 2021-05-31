@@ -21,14 +21,14 @@ void pretty_print(size_t n, uint8_t prog[n], const char *indent) {
     switch (opt) {
     case BF_ADD:
     case BF_PTR:
-      printf("%d\n", value);
+      printf("%+4d\n", value);
       break;
     case BF_JMP:
       indent_level += (value < 0) ? -1 : 1;
       if (value == 0 || value == -1) {
         printf("%s\n", jumps[value == -1]);
       } else {
-        printf("%d (line %lu)\n", value, i + value + 1);
+        printf("%+4d (line %lu)\n", value, i + value + 1);
       }
       break;
     case BF_IOC:
