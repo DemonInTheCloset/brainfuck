@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define BFVM_MEM 30000
+
 #define BFC_VER_YEAR 2020
 #define BFC_VER_MONTH 5
 #define BFC_VER_DAY 31
