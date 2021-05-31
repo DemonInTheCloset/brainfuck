@@ -95,6 +95,7 @@ size_t remove_redundant(size_t n, const uint8_t prog[n], uint8_t output[n]) {
       if (instr_imm(prog[0]) == 0) {
         break;
       }
+      __attribute__((fallthrough));
     case BF_JMP:
     case BF_IOC:
       output[ic++] = prog[i];

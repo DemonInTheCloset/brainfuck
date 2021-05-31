@@ -5,14 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum BF_OPT {
-  BF_ADD = 0x0,
-  BF_PTR = 0x1,
-  BF_JMP = 0x2,
-  BF_IOC = 0x3
-}
-
-typedef enum BF_OPT BF_OPT;
+typedef enum { BF_ADD = 0x0, BF_PTR = 0x1, BF_JMP = 0x2, BF_IOC = 0x3 } BF_OPT;
 
 static inline BF_OPT instr_opt(uint8_t instr) { return instr & 0x3; }
 

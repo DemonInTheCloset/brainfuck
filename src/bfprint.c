@@ -8,7 +8,7 @@ void pretty_print(size_t n, uint8_t prog[n], const char *indent) {
   int indent_level = 0;
 
   for (size_t i = 0; i < n; ++i) {
-    for (int j = 0; j < i; ++j) {
+    for (int j = 0; j < indent_level; ++j) {
       printf("%s", indent);
     }
 
