@@ -24,11 +24,11 @@ void pretty_print(size_t n, uint8_t prog[n], const char *indent) {
       printf("%d\n", value);
       break;
     case BF_JMP:
+      indent_level += (value < 0) ? -1 : 1;
       if (value == 0 || value == -1) {
-        indent_level += value ? value : 1;
         printf("%s\n", jumps[value == -1]);
       } else {
-        printf("bad value: %d\n", value);
+        printf("%d (line %lu)\n", value, i + value);
       }
       break;
     case BF_IOC:
