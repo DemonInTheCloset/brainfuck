@@ -4,6 +4,11 @@ static const char *instructions[] = {"add", "ptr", "jmp", "ioc"};
 static const char *jumps[] = {"forward", "backward"};
 static const char *iocalls[] = {"putc", "getc"};
 
+void print_header(BFC_HEADER header) {
+  printf("Version: %d.%d.%d\nFlags: 0x%08x\nSize: %luB\n", header.ver_year,
+         header.ver_month, header.ver_day, header.flags, header.size);
+}
+
 void pretty_print(size_t n, uint8_t prog[n], const char *indent) {
   int indent_level = 0;
 
