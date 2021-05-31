@@ -1,4 +1,5 @@
 # Compiled binaries
+build/
 *.o
 *bftool
 brainfuck
