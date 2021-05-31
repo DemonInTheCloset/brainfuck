@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
 
   len = proccess(len, text, buffer);
 
-  pretty_print(len, buffer, " ");
+  pretty_print(len, buffer, "  ");
 
   free(buffer);
 
