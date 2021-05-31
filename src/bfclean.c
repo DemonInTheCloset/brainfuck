@@ -154,6 +154,57 @@ size_t simplify(size_t n, uint8_t prog[n], uint8_t output[n]) {
   return simplify(n, prog, output);
 }
 
+int match_jumps(size_t n, uint8_t prog[n]) {
+  if (n == 0)
+    return 0;
+
+  size_t *stack = malloc(sizeof(size_t) * n);
+  size_t sp = 0;
+
+  if (!stack) {
+    fprintf(stderr, "Error: Failed to allocate %luB stack\n",
+            sizeof(size_t) * n);
+    return 0;
+  }
+
+  for (size_t ic = 0; ic < n; ++ic) {
+    BF_OPT opt = instr_opt(prog[ic]);
+
+    switch (opt) {
+    case BF_IOC:
+    case BF_PTR:
+    case BF_ADD:
+      break;
+    case BF_JMP:
+      if (instr_imm(prog[ic])) {
+        if (!sp--) {
+          free(stack);
+          fprintf(stderr, "Error: unmatched ']'\n");
+          return 1;
+        }
+
+        size_t jump = ic - stack[sp];
+        if (jump >= (1u << 13)) {
+          fprintf(stderr, "Warning: jump too long (%lu >= %u)\n", jump,
+                  (1u << 13));
+        } else {
+          int forward = jump;
+          int backward = -(int)jump;
+
+          prog[ic] = instr(backward, BF_JMP);
+          prog[stack[sp]] = instr(forward, BF_JMP);
+        }
+      } else {
+        stack[sp++] = ic;
+      }
+      break;
+    }
+  }
+
+  free(stack);
+  return 0;
+}
+
 size_t proccess(size_t n, const char prog[n], uint8_t output[n]) {
   uint8_t *buffer = malloc(sizeof(uint8_t) * n);
 
