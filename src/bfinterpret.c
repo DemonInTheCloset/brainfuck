@@ -12,10 +12,8 @@ BFC_HEADER read_bytecode(const char *path, uint8_t **prog) {
     return header;
   }
 
-  size_t read;
-  if (sizeof(header) != (read = fread(&header, sizeof(header), 1, file))) {
-    fprintf(stderr, "Error: Failed to read header, read (%lu/%lu)\n", read,
-            sizeof(header));
+  if (1 != fread(&header, sizeof(header), 1, file)) {
+    fprintf(stderr, "Error: Failed to read header\n");
 
     header = (BFC_HEADER){
         .ver_year = 0, .ver_month = 0, .ver_day = 0, .flags = 0, .size = 0};
@@ -39,6 +37,7 @@ BFC_HEADER read_bytecode(const char *path, uint8_t **prog) {
 
   *prog = malloc(sizeof(uint8_t) * header.size);
 
+  size_t read;
   if (header.size !=
       (read = fread(*prog, sizeof(uint8_t), header.size, file))) {
     fprintf(stderr, "Warning: read %luB/%luB\n", read, header.size);
@@ -64,15 +63,14 @@ int write_bytecode(size_t n, const uint8_t prog[n], uint32_t flags,
     return EXIT_FAILURE;
   }
 
-  size_t wrote;
-  if (sizeof(header) != (wrote = fwrite(&header, sizeof(header), 1, file))) {
-    fprintf(stderr, "Error: failed to write header (%luB/%luB)\n", wrote,
-            sizeof(header));
+  if (1 != fwrite(&header, sizeof(header), 1, file)) {
+    fprintf(stderr, "Error: failed to write header\n");
 
     fclose(file);
     return EXIT_FAILURE;
   }
 
+  size_t wrote;
   if (n != (wrote = fwrite(prog, sizeof(uint8_t), n, file))) {
     fprintf(stderr, "Error: failed to write bytecode (%luB/%luB)\n", wrote, n);
 
