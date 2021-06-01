@@ -19,4 +19,4 @@ examples/joke.bfc:
 	build/bftool -co "$@" "$<"
 
 clean:
-	rm -rf brainfuck build/*
+	rm -rf brainfuck build/* examples/*.bfc
