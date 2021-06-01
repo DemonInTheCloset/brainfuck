@@ -1,13 +1,7 @@
 .PHONY: all clean
 
 CC = gcc
-CFLAGS += -Wall -Wextra -Wpedantic -Wshadow -std=c17
-
-ifeq ($(VERBOSE),TRUE)
-	HIDE :=
-else
-	HIDE := @
-endif
+CFLAGS += -O2 -Wall -Wextra -Wpedantic -Wshadow -std=c17
 
 all: build/bftool
 
