@@ -131,6 +131,9 @@ int interpret(size_t n, const uint8_t prog[n], uint32_t flags) {
     BF_OPT opt = instr_opt(prog[ic]);
     int value = instr_imm(prog[ic]);
 
+    // printf("Line %4lu/%lu Executing 0x%x:%+4d; Stack 0x%016lx:0x%02x\n", ic +
+    // 1, n, opt, value, sp, memory[sp]);
+
     switch (opt) {
     case BF_ADD:
       memory[sp] += value;
@@ -147,14 +150,19 @@ int interpret(size_t n, const uint8_t prog[n], uint32_t flags) {
       if (value) {
         memory[sp] = getc(stdin);
       } else {
+        // printf("0x%02x\n", memory[sp]);
         putc(memory[sp], stdout);
       }
       break;
     case BF_JMP:
       if (flags & BFC_RJMP) {
-        ic += value;
+        if ((memory[sp] == 0) ^ (value < 0)) {
+          ic += value;
+        }
       } else {
-        ic = match(n, prog, ic);
+        if ((memory[sp] == 0) ^ (value != 0)) {
+          ic = match(n, prog, ic);
+        }
       }
       break;
     }
