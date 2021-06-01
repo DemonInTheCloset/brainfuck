@@ -3,3 +3,6 @@ build/
 *.o
 *bftool
 brainfuck
+
+# Brainfuck bytecode
+*.bfc
