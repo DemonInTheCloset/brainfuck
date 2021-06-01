@@ -3,7 +3,10 @@
 CC = gcc
 CFLAGS += -O2 -Wall -Wextra -Wpedantic -Wshadow -std=c17
 
-all: build/bftool
+all: build build/bftool
+
+build:
+	mkdir build
 
 build/bftool: build/bftool.o build/bfclean.o build/bfprint.o build/bfinterpret.o
 
