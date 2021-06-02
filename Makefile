@@ -23,7 +23,7 @@ examples/joke.bfc:
 
 # Compiling of Brainfuck programs into assembly
 %.S: %.bfc
-	build/bftool -ao $@ $^
+	build/bftool -o $@ $^
 
 clean:
 	rm -rf brainfuck build/* examples/*.bfc

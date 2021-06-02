@@ -39,7 +39,7 @@ static size_t generate_asm(size_t n, char buffer[n], uint8_t instr, size_t ic) {
   int value = instr_imm(instr);
 
   switch (instr_opt(instr)) {
-  case BF_ADD:
+  case BF_ADD: {
     written = strlen(add_asm) + 4;
 
     if (written > n)
@@ -47,7 +47,8 @@ static size_t generate_asm(size_t n, char buffer[n], uint8_t instr, size_t ic) {
 
     sprintf(buffer, "%s%02x\n", add_asm, (uint8_t)value);
     break;
-  case BF_PTR:
+  }
+  case BF_PTR: {
     written = strlen(ptr_asm) + 10;
 
     if (written > n)
@@ -55,9 +56,10 @@ static size_t generate_asm(size_t n, char buffer[n], uint8_t instr, size_t ic) {
 
     sprintf(buffer, "%s%08x\n", ptr_asm, value);
     break;
+  }
   case BF_JMP: {
     const char *jmp = (value < 0) ? jbw_asm : jfw_asm;
-    written = strlen(jmp_asm) + strlen(jmp) + strlen(label) + 35;
+    written = strlen(jmp_asm) + strlen(jmp) + strlen(label) + 36;
 
     if (written > n)
       return 0;
@@ -69,7 +71,7 @@ static size_t generate_asm(size_t n, char buffer[n], uint8_t instr, size_t ic) {
             "\n"     // next command
             "%s"     // label from
             "%016lx"
-            "\n",
+            ":\n",
             jmp_asm, jmp, ic + value, label, ic);
     break;
   }
@@ -100,11 +102,14 @@ char *assembler(size_t n, const uint8_t prog[n]) {
     return NULL;
   }
 
+  memcpy(output + out_len, start_asm, strlen(start_asm));
+  out_len += strlen(start_asm);
+
   for (size_t ic = 0; ic < n; ++ic) {
     buf_len = generate_asm(sizeof(buf), buf, prog[ic], ic);
 
-    if (out_len == 0) {
-      fprintf(stderr, "Error: Faile to generate assembly\n");
+    if (buf_len == 0) {
+      fprintf(stderr, "Error: Failed to generate assembly\n");
       return NULL;
     }
 
