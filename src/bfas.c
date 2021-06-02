@@ -13,13 +13,14 @@ static const char exit_asm[] = "mov eax, 60\n"  // syscall exit
                                "xor edi, edi\n" // return code 0
                                "syscall\n";     // call
 
-static const char add_asm[] = "add byte ptr [rax], ";       // expects value
-static const char ptr_asm[] = "add rax, ";                  // expects value
+static const char add_asm[] = "add byte ptr [rax], 0x";     // expects value
+static const char ptr_asm[] = "add rax, 0x";                // expects value
 static const char jmp_asm[] = "movzx esi, byte ptr [rax]\n" // load value
                               "test esi, esi\n";            // test value
 
-static const char jfw_asm[] = "jz ";  // expects label & set label
-static const char jbw_asm[] = "jnz "; // expects label & set label
+static const char label[] = ".L0x";       // jump label
+static const char jfw_asm[] = "jz .L0x";  // expects label & set label
+static const char jbw_asm[] = "jnz .L0x"; // expects label & set label
 
 static const char ioc_asm[] = "push rax\n"      // save value of rax
                               "mov edx, 1\n"    // number of bytes to read/write
@@ -33,17 +34,103 @@ static const char get_asm[] = "mov edi, 0\n"    // stdin
                               "syscall\n"       // call
                               "pop rax\n";      // restore value from rax
 
+static size_t generate_asm(size_t n, char buffer[n], uint8_t instr, size_t ic) {
+  size_t written = 0;
+  int value = instr_imm(instr);
+
+  switch (instr_opt(instr)) {
+  case BF_ADD:
+    written = strlen(add_asm) + 4;
+
+    if (written > n)
+      return 0;
+
+    sprintf(buffer, "%s%02x\n", add_asm, (uint8_t)value);
+    break;
+  case BF_PTR:
+    written = strlen(ptr_asm) + 10;
+
+    if (written > n)
+      return 0;
+
+    sprintf(buffer, "%s%08x\n", ptr_asm, value);
+    break;
+  case BF_JMP: {
+    const char *jmp = (value < 0) ? jbw_asm : jfw_asm;
+    written = strlen(jmp_asm) + strlen(jmp) + strlen(label) + 35;
+
+    if (written > n)
+      return 0;
+
+    sprintf(buffer,
+            "%s"     // value test
+            "%s"     // jump
+            "%016lx" // label to
+            "\n"     // next command
+            "%s"     // label from
+            "%016lx"
+            "\n",
+            jmp_asm, jmp, ic + value, label, ic);
+    break;
+  }
+  case BF_IOC: {
+    const char *ioc = (value == 0) ? put_asm : get_asm;
+    written = strlen(ioc_asm) + strlen(ioc) + 1;
+
+    if (written > n)
+      return 0;
+
+    sprintf(buffer, "%s%s", ioc_asm, ioc);
+    break;
+  }
+  }
+
+  return written - 1;
+}
+
 char *assembler(size_t n, const uint8_t prog[n]) {
   char buf[512];
-  char *output = malloc(sizeof(buf));
-  size_t capacity = sizeof(buf) / sizeof(buf[0]);
-  size_t length = 0;
+  size_t out_len = 0;
   size_t buf_len = 0;
+  size_t capacity = strlen(start_asm) + strlen(exit_asm) + sizeof(buf);
+  char *output = NULL;
 
-  if (!output) {
+  if (!(output = realloc(output, capacity))) {
     fprintf(stderr, "Error: Failed to allocate %luB\n", capacity);
     return NULL;
   }
+
+  for (size_t ic = 0; ic < n; ++ic) {
+    buf_len = generate_asm(sizeof(buf), buf, prog[ic], ic);
+
+    if (out_len == 0) {
+      fprintf(stderr, "Error: Faile to generate assembly\n");
+      return NULL;
+    }
+
+    if (out_len + buf_len > capacity) {
+      capacity += capacity / 2;
+
+      if (!(output = realloc(output, capacity))) {
+        fprintf(stderr, "Error: Failed to allocate %luB\n", capacity);
+        return NULL;
+      }
+    }
+
+    memcpy(output + out_len, buf, buf_len);
+    out_len += buf_len;
+  }
+
+  if (out_len + strlen(exit_asm) + 1 > capacity) {
+    capacity = out_len + strlen(exit_asm) + 1;
+
+    if (!(output = realloc(output, capacity))) {
+      fprintf(stderr, "Error: Failed to allocate %luB\n", capacity);
+      return NULL;
+    }
+  }
+
+  memcpy(output + out_len, exit_asm, strlen(exit_asm) + 1);
 
   return output;
 }
