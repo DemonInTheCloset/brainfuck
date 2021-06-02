@@ -206,7 +206,6 @@ int bfbc_compiler(struct prog_args args) {
 
 int bf_assemble(struct prog_args args) {
   uint8_t *prog = NULL;
-  size_t len;
 
   // Get source string
   if (!args.is_file) {
