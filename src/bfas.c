@@ -4,7 +4,7 @@ static const char start_asm[] =
     ".intel_syntax noprefix\n" // Use intel syntax
     ".global _start\n"         // export _start symbol
     ".bss\n"                   // zero initialized memory
-    "memory: resb 30000\n"     // allocate memory
+    ".lcomm memory, 30000\n"   // allocate memory
     ".text\n"                  // program section
     "_start:\n"                // entry point
     "movabs rax, memory\n";    // load memory address into rax
@@ -14,7 +14,7 @@ static const char exit_asm[] = "mov eax, 60\n"  // syscall exit
                                "syscall\n";     // call
 
 static const char add_asm[] = "add byte ptr [rax], 0x";     // expects value
-static const char ptr_asm[] = "add rax, 0x";                // expects value
+static const char ptr_asm[] = "add rax, ";                  // expects value
 static const char jmp_asm[] = "movzx esi, byte ptr [rax]\n" // load value
                               "test esi, esi\n";            // test value
 
@@ -49,12 +49,12 @@ static size_t generate_asm(size_t n, char buffer[n], uint8_t instr, size_t ic) {
     break;
   }
   case BF_PTR: {
-    written = strlen(ptr_asm) + 10;
+    written = strlen(ptr_asm) + 6;
 
     if (written > n)
       return 0;
 
-    sprintf(buffer, "%s%08x\n", ptr_asm, value);
+    sprintf(buffer, "%s%+4d\n", ptr_asm, value);
     break;
   }
   case BF_JMP: {
