@@ -1,0 +1,27 @@
+[
+  {
+    "directory": ".",
+    "command": "gcc  -O2 -Wall -Wextra -Wpedantic -Wshadow -std=c17 -c -o build/bftool.o src/bftool.c",
+    "file": "src/bftool.c"
+  },
+  {
+    "directory": ".",
+    "command": "gcc  -O2 -Wall -Wextra -Wpedantic -Wshadow -std=c17 -c -o build/bfclean.o src/bfclean.c",
+    "file": "src/bfclean.c"
+  },
+  {
+    "directory": ".",
+    "command": "gcc  -O2 -Wall -Wextra -Wpedantic -Wshadow -std=c17 -c -o build/bfprint.o src/bfprint.c",
+    "file": "src/bfprint.c"
+  },
+  {
+    "directory": ".",
+    "command": "gcc  -O2 -Wall -Wextra -Wpedantic -Wshadow -std=c17 -c -o build/bfinterpret.o src/bfinterpret.c",
+    "file": "src/bfinterpret.c"
+  },
+  {
+    "directory": ".",
+    "command": "gcc  -O2 -Wall -Wextra -Wpedantic -Wshadow -std=c17 -c -o build/bfas.o src/bfas.c",
+    "file": "src/bfas.c"
+  }
+]
