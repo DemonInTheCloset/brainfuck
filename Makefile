@@ -22,8 +22,12 @@ examples/joke.bfc:
 	build/bftool -co $@ $^
 
 # Compiling of Brainfuck programs into assembly
-%.S: %.bfc
+%.s: %.bfc
 	build/bftool -o $@ $^
+
+# Compiling brainfuck assembly into binaries
+%: %.s
+	$(AS) -nostdlib -o $@ $^
 
 clean:
 	rm -rf brainfuck build/* examples/*.bfc
