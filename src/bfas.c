@@ -1,13 +1,12 @@
 #include "bfas.h"
 
-static const char start_asm[] =
-    ".intel_syntax noprefix\n" // Use intel syntax
-    ".global _start\n"         // export _start symbol
-    ".bss\n"                   // zero initialized memory
-    ".lcomm memory, 30000\n"   // allocate memory
-    ".text\n"                  // program section
-    "_start:\n"                // entry point
-    "movabs rax, memory\n";    // load memory address into rax
+static const char start_asm[] = ".intel_syntax noprefix\n" // Use intel syntax
+                                ".global _start\n" // export _start symbol
+                                ".bss\n"           // zero initialized memory
+                                ".lcomm memory, 30000\n"     // allocate memory
+                                ".text\n"                    // program section
+                                "_start:\n"                  // entry point
+                                "lea rax, [rip + memory]\n"; // set rax = 0
 
 static const char exit_asm[] = "mov eax, 60\n"  // syscall exit
                                "xor edi, edi\n" // return code 0
@@ -22,17 +21,17 @@ static const char label[] = ".L0x";       // jump label
 static const char jfw_asm[] = "jz .L0x";  // expects label & set label
 static const char jbw_asm[] = "jnz .L0x"; // expects label & set label
 
-static const char ioc_asm[] = "push rax\n"      // save value of rax
-                              "mov edx, 1\n"    // number of bytes to read/write
-                              "mov rsi, rax\n"; // address
-static const char put_asm[] = "mov edi, 1\n"    // stdout
-                              "mov eax, 1\n"    // syscall write
-                              "syscall\n"       // call
-                              "pop rax\n";      // restore value from rax
-static const char get_asm[] = "mov edi, 0\n"    // stdin
-                              "mov eax, 0\n"    // syscall write
-                              "syscall\n"       // call
-                              "pop rax\n";      // restore value from rax
+static const char ioc_asm[] = "push rax\n"   // save value of rax
+                              "mov edx, 1\n" // number of bytes to read/write
+                              "lea rsi, [rax]\n"; // address
+static const char put_asm[] = "mov edi, 1\n"      // stdout
+                              "mov eax, 1\n"      // syscall write
+                              "syscall\n"         // call
+                              "pop rax\n";        // restore value from rax
+static const char get_asm[] = "mov edi, 0\n"      // stdin
+                              "mov eax, 0\n"      // syscall write
+                              "syscall\n"         // call
+                              "pop rax\n";        // restore value from rax
 
 static size_t generate_asm(size_t n, char buffer[n], uint8_t instr, size_t ic) {
   size_t written = 0;
