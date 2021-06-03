@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean install uninstall
 
 CC = gcc
 CFLAGS += -O2 -Wall -Wextra -Wpedantic -Wshadow -std=c17
@@ -19,11 +19,11 @@ examples/joke.bfc:
 
 # Compiling of Brainfuck programs into bytecode
 %.bfc: %.bf
-	build/bftool -co $@ $^
+	bftool -co $@ $^
 
 # Compiling of Brainfuck programs into assembly
 %.s: %.bfc
-	build/bftool -o $@ $^
+	bftool -o $@ $^
 
 # Compiling brainfuck assembly into object files
 %: %.s
@@ -31,3 +31,9 @@ examples/joke.bfc:
 
 clean:
 	rm -rf brainfuck build/* examples/*.bfc
+
+install: build/bftool
+	mkdir -p ~/.local/bin && cp build/bftool -t ~/.local/bin
+
+uninstall:
+	rm -f ~/.local/bin/bftool
