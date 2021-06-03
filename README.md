@@ -33,6 +33,10 @@ Compiles the assembly into a binary (use `-g` if you want debugging symbols).
 
 You can find rules to preform all these operations automatically **The rule to compile .s files will overwrite other implicit rules for .s files**.
 
+## Syntax HIghlighting for vim/nvim
+
+[vim-brainfuck](https://github.com/DemonInTheCloset/vim-brainfuck): Simple syntax that turns every non instruction character into comments.
+
 ## Source Documentation
 
 ### bftool.c
