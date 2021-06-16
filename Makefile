@@ -32,7 +32,7 @@ examples/joke.bfc:
 clean:
 	rm -rf brainfuck build/* examples/*.bfc
 
-install: build/bftool
+install: all
 	mkdir -p ~/.local/bin && cp build/bftool -t ~/.local/bin
 
 uninstall:
